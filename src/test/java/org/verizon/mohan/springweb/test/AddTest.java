@@ -34,7 +34,7 @@ public class AddTest extends TestCase {
     // TODO add test methods here. The name must begin with 'test'. For example:
     // public void testHello() {}
     public void testAdd() {
-        Assert.assertEquals(132,(int) c.test(11, 120));
+        Assert.assertEquals(132,(int) c.test(11, 121));
     }
 
 }
