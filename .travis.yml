@@ -4,6 +4,6 @@ deploy:
   provider: cloudfoundry
   api: https://api.run.pivotal.io
   username: mohan.purushothaman.88@gmail.com
-  password: "Dec\\$2015"
+  password: Dec2015
   organization: mohan-purushothaman.org
   space: development
