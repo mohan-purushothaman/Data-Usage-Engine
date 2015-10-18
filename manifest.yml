@@ -1,3 +1,4 @@
 ---
 applications:
 - name: SpringWeb
+  path: target/SpringWeb-1.0.war
