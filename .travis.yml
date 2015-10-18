@@ -4,7 +4,6 @@ deploy:
   provider: cloudfoundry
   api: https://api.run.pivotal.io
   username: mohan.purushothaman.88@gmail.com
-  password:
-    secure: zmGlNB9//KbDRf+G6Fth4UJpn5dvmkS1F6jgGSsSNx4iIf3RwLlh9MQQ9oeAGrDCelWXOdXowA6y/Ne/w0YJpAbu9kKSIN+3fW1NoRfjZLQwazDdFp5yvw4bZGmtts9c0R8aKAqS4QuQwC2m5PhoRhjj6USfiRguAoA8ZkkF/OFFnObVT1yDKLI4D+UX/sC969rhRtgSAAa5MvIN4f/Zv5jE3eEz/0ApBoN69OIwLevZImaXRsx6ZmbPgQmtaKWfDTQxqvBwEOk5uEOwOdjuqQFtNhnNxY4IT0Kry5+n54txLYZvE2wfV/eHG6n6PU3W9vgNbEK3jby6+9BrPF1HMgtLbElt0odwrtxOtL/DvUB1cyjbfqNJo+HihXidMWAHNTyEZQXdObMCOCOrAWzZeSQhLG9m/Z635S65bvJwUZG3RuJ7qIiksHqVmRGEmyxhFSo2DHdmpSfz+vkI5xKZuPmeQTk5vzMrDNx8/bAW7pR/SZ8Xfzjo4xdziHtY5c6t/McUPqjzBzNMdRHwQZ2a4NO9RP/TTSRLxmFRL6LJdXz3ewk8C5m8OyvIPJC9djqHi5LD6IoCn5kBmoUGd6bS5WfWWryk8Ctpc9pbHNRbKT0KO+9MkwZs79TeDW15/B0ezjfyE7fxw4o2B7OjOgTOMqIS7D77/2JFsN1Rlldv+Qs=
+  password: "Dec$2015"
   organization: mohan-purushothaman.org
   space: development
