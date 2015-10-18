@@ -10,3 +10,4 @@ deploy:
   space: development
   on:
     repo: mohan-purushothaman/spring-base
+    all_branches: true
