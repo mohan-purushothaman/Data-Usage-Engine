@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import java.util.*;
 
 /**
  *
@@ -36,10 +37,15 @@ public class HomeContoller {
     }
     @RequestMapping("/test")
     @ResponseBody
-    public Integer test(@RequestParam int a,@RequestParam int b){
-        l.debug("adding {} and {}",a,b);
+    public Map test(@RequestParam int a,@RequestParam int b){
+        Map<String,String> m = new HashMap<String,String>();
+/*        l.debug("adding {} and {}",a,b);
         l.error("error - adding {} and {}",a,b);
-        return a+b;
+*/
+m.put("test123","1729");
+m.put("test1234","1829");
+
+return m;
                 
     }
     
