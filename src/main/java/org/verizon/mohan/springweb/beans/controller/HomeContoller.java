@@ -32,20 +32,13 @@ public class HomeContoller {
     
     @RequestMapping({"/","/home"})
     public String home(){
-        new JdbcTemplate(ds).update("insert into log(msg,time) values(?,?)", "sample msg",new Date());
         return "home";
     }
-    @RequestMapping("/test")
+    @RequestMapping("/testDB")
     @ResponseBody
-    public Map test(@RequestParam int a,@RequestParam int b){
-        Map<String,String> m = new HashMap<String,String>();
-/*        l.debug("adding {} and {}",a,b);
-        l.error("error - adding {} and {}",a,b);
-*/
-m.put("test123","1729");
-m.put("test1234","1829");
-
-return m;
+    public Map testDB(){
+                new JdbcTemplate(ds).update("insert into log(msg,time) values(?,?)", "sample msg",new Date());
+                return new JdbcTemplate(ds).queryForMap("select * from LOG");
                 
     }
     
