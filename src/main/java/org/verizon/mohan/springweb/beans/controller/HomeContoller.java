@@ -36,9 +36,9 @@ public class HomeContoller {
     }
     @RequestMapping("/testDB")
     @ResponseBody
-    public Map testDB(){
+    public List testDB(){
                 new JdbcTemplate(ds).update("insert into log(msg,time) values(?,?)", "sample msg",new Date());
-                return new JdbcTemplate(ds).queryForMap("select * from LOG");
+                return new JdbcTemplate(ds).queryForList("select * from LOG");
                 
     }
     
