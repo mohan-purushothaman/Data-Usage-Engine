@@ -37,15 +37,17 @@ public class FileUploadController {
     public @ResponseBody
     void uploadFileHandler(@RequestParam("name") String name,
             @RequestParam("file") MultipartFile file) throws Exception {
- 
+          logger.info("uploadFileHandler");
+            long startTime=System.currentTimeMillis();
         if (!file.isEmpty()) {
             try {
                 byte[] bytes = file.getBytes();
                 BufferedInputStream ipStream=new BufferedInputStream(file.getInputStream(),BaseConfig.STREAM_BUFFER_SIZE);
                 BufferedReader ipReader = new BufferedReader(new InputStreamReader(ipStream),BaseConfig.BUFFER_SIZE);
+                while (ipReader.ready()){
                 String line = ipReader.readLine();
-                System.out.println(line);
-              
+               }
+              logger.info("Time taken----"+(System.currentTimeMillis()-startTime)+"ms");
  
             } catch (Exception e) {
                 throw new Exception("Exception occured while reading file"+e);
