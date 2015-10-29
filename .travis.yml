@@ -1,5 +1,5 @@
 language: java
-deploy:
+deploy: 
   edge: true
   provider: cloudfoundry
   api: https://api.run.pivotal.io
