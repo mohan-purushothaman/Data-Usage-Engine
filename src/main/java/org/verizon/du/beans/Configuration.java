@@ -34,7 +34,13 @@ public class Configuration {
 
      @Bean
            public DataSource dataSource() {
+               
               BasicDataSource ds=new BasicDataSource();
+              ds.setDriverClassName("com.mysql.jdbc.Driver");
+              ds.setUsername("root");
+              ds.setUrl("jdbc:mysql://localhost:3306/hackathon");
+              ds.setPassword("root");
+              
               return ds;
          }
      }

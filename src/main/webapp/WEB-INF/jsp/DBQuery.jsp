@@ -5,7 +5,7 @@
 <title>Execute query</title>
 </head>
 <body>
-<form action="/executeQuery" id="usrform">
+    <form action=<c:url value="/executeQuery"/> id="queryfrom">
  Query: <textarea rows="8" cols="50" name="querytext" form = "queryfrom">
 Enter query here...</textarea>
   <input type="submit">
