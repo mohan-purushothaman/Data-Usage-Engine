@@ -50,6 +50,6 @@ public class Engine {
     
     
     private static Date parseDate(String dateString) throws Exception{
-        return new SimpleDateFormat(BaseConfig.dateFormat).parse(dateString);
+        return new SimpleDateFormat(BaseConfig.DATE_FORMAT).parse(dateString);
     }
 }
