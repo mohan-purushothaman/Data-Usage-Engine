@@ -1,4 +1,4 @@
 ---
 applications:
-- name: SpringWeb
-  path: target/SpringWeb-1.0.war
+- name: DataUsageEngine
+  path: target/DataUsageEngine-1.0.war
