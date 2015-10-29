@@ -9,5 +9,10 @@
         <put-attribute name="pageCSS" value="home.css"/>
         <put-attribute name="pageJS" value="home.js"/>
     </definition>
-    
+    <definition extends="baseTemplate" name="query">
+        <put-attribute name="pageTitle" value="Execute Queries"/>
+        <put-attribute name="body" value="/WEB-INF/jsp/DBQuery.jsp"/>
+        <put-attribute name="pageCSS" value="home.css"/>
+        <put-attribute name="pageJS" value="home.js"/>
+    </definition>
 </tiles-definitions>

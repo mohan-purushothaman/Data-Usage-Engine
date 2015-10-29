@@ -24,6 +24,10 @@ public class HomeContoller {
        return "home";
    }
     
+   @RequestMapping({"/query"})
+   public String query(){
+       return "query";
+   }
     
     
 }
