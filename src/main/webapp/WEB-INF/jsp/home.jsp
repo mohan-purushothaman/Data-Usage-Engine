@@ -1,23 +1,16 @@
-<%-- 
-    Document   : home
-    Created on : 17 Oct, 2015, 9:26:23 PM
-    Author     : Mohan Purushothaman
---%>
-
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page session="false" %>
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Data Usage Engine</title>
-    </head>
-    <body>
-         <form method="POST" enctype="multipart/form-data"
-		action="/upload">
-		File to upload: <input type="file" name="file"><br /> Name: <input
-			type="text" name="name"><br /> <br /> <input type="submit"
-			value="Upload"> Press here to upload the file!
-	</form>
-    </body>
-    
-   
+<head>
+<title>Upload File Request Page</title>
+</head>
+<body>
+ 
+    <form method="POST" action="uploadFile" enctype="multipart/form-data">
+        File to upload: <input type="file" name="file"><br /> 
+        Name: <input type="text" name="name"><br /> <br /> 
+        <input type="submit" value="Upload"> Press here to upload the file!
+    </form>
+     
+</body>
+</html>
