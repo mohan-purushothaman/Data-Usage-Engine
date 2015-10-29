@@ -14,7 +14,7 @@
 
     <mvc:annotation-driven/>
     <aop:aspectj-autoproxy />
-    <context:component-scan base-package="org.verizon.mohan.springweb.beans" />
+    <context:component-scan base-package="org.verizon.du.beans" />
     <mvc:resources mapping="/resources/**" location="/web-resources/" />
     <bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>
 
