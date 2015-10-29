@@ -5,9 +5,9 @@
  */
 package org.verizon.du.core;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,9 +16,25 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class Engine {
-    public boolean process(String string) throws Exception{
-        DataUsage usage=createDataUsage(string);
-        return true;
+    
+    @Autowired
+    Aggregator aggregator;
+    
+    @Autowired
+    ExcludeFilter filter;
+    
+    @Autowired
+    AlertSystem alertSystem;
+    
+    public void process(DataUsage usage) throws Exception{
+        
+        if(filter.canExclude(usage)){
+            //need to plan on storing excluded data
+        }else{
+            //we need to aggregate this datausage
+            alertSystem.processAlerts(aggregator.aggregate(usage));
+        }
+        
     }
 
     /**
