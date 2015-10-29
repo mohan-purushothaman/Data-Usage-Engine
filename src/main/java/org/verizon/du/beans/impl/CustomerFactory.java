@@ -37,52 +37,50 @@ public class CustomerFactory {
 
                 @Override
                 public Customer extractData(ResultSet rs) throws SQLException, DataAccessException {
-                     Customer c=new Customer(rs.getString("CUSTID"), loadColumns("HR_",1,24,rs) , loadColumns("DAY_", 1, 31, rs), rs.getLong("MONTH_AGGR"));
-                   
-                    
+                    Customer c = new Customer(rs.getString("CUSTID"), loadColumns("HR_", 1, 24, rs), loadColumns("DAY_", 1, 31, rs), rs.getLong("MONTH_AGGR"));
+
                     return c;
                 }
-                
-                public Map<Integer,Usage> loadColumns(String base,int start,int end,ResultSet rs) throws SQLException{
-                    Map<Integer,Usage> usage=new HashMap<Integer, Usage>();
-                    for (; start<end; start++) {
-                        usage.put(start-1,new Usage(rs.getLong(base+start)));
+
+                public Map<Integer, Usage> loadColumns(String base, int start, int end, ResultSet rs) throws SQLException {
+                    Map<Integer, Usage> usage = new HashMap<Integer, Usage>();
+                    for (; start < end; start++) {
+                        usage.put(start - 1, new Usage(rs.getLong(base + start)));
                     }
                     return usage;
                 }
-                
-                
+
             }, custId);
             customerMap.put(custId, customer);
         }
         return customer;
     }
-    
-    
-    public void updateCustomer(Customer customer){
-        new JdbcTemplate(dataSource).update("update USAGE_INFO set "+getUpdateString(customer)+" where cust_id=?'",customer.getCustomerId() );
+
+    public void updateCustomer(Customer customer) {
+        new JdbcTemplate(dataSource).update("update USAGE_INFO set " + getUpdateString(customer) + " where cust_id=?'", customer.getCustomerId());
     }
 
-    StringBuilder sb=new StringBuilder(500);
-    
+    private final StringBuilder sb = new StringBuilder(500);
+
     private String getUpdateString(Customer customer) {
+        
         sb.setLength(0);
         sb.append(",MONTH_AGGR=").append(customer.getMonthUsage());
-        
-         for(Entry<Integer,Usage> usage:customer.getHourUsage().entrySet()){
-            Usage u=usage.getValue();
-            if(u.isUsageChanged()){
+
+        for (Entry<Integer, Usage> usage : customer.getHourUsage().entrySet()) {
+            Usage u = usage.getValue();
+            if (u.isUsageChanged()) {
                 sb.append(",HOUR_").append(usage.getKey()).append('=').append(u.getUsage());
             }
         }
-         
-        for(Entry<Integer,Usage> usage:customer.getDayUsage().entrySet()){
-            Usage u=usage.getValue();
-            if(u.isUsageChanged()){
+
+        for (Entry<Integer, Usage> usage : customer.getDayUsage().entrySet()) {
+            Usage u = usage.getValue();
+            if (u.isUsageChanged()) {
                 sb.append(",DAY_").append(usage.getKey()).append('=').append(u.getUsage());
             }
         }
-        
-       return sb.toString();
+
+        return sb.toString();
     }
 }
