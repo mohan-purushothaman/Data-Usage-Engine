@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.verizon.du.core.BaseConfig;
 import org.verizon.du.core.DataUsage;
-import org.verizon.du.core.Engine;
+import org.verizon.du.beans.impl.Engine;
  
 /**
  *

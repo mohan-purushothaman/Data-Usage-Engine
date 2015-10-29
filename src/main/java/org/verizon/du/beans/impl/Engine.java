@@ -3,12 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.verizon.du.core;
+package org.verizon.du.beans.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.verizon.du.core.Aggregator;
+import org.verizon.du.core.AlertSystem;
+import org.verizon.du.core.DataUsage;
+import org.verizon.du.core.ExcludeFilter;
 
 /**
  *
