@@ -5,18 +5,10 @@
  */
 package org.verizon.du.core;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  *
  * @author Administrator
  */
-public class Customer {
-    private String customerId;
-    private Map<Integer,Usage> hourUsage;
-    private Map<Integer,Usage> dayUsage;
-    private long monthUsage;
-    
-    
+public interface ExcludeFilter {
+    public boolean canExclude(DataUsage usage);
 }
