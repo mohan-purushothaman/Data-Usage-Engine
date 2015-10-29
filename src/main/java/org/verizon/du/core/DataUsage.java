@@ -51,5 +51,12 @@ public class DataUsage {
     public Date getEndTime() {
         return endTime;
     }
+
+    @Override
+    public String toString() {
+        return "DataUsage{" + "customerId=" + customerId + ", deviceId=" + deviceId + ", website=" + website + ", usage=" + usage + ", startTime=" + startTime + ", endTime=" + endTime + '}';
+    }
+
+   
     
 }
