@@ -18,6 +18,8 @@ public class Customer {
     private final Map<Integer,Usage> dayUsage;
     private long monthUsage;
 
+    private boolean persistPending;
+    
     public Customer(String customerId, Map<Integer, Usage> hourUsage, Map<Integer, Usage> dayUsage, long monthUsage) {
         this.customerId = customerId;
         this.hourUsage = hourUsage;
@@ -32,7 +34,7 @@ public class Customer {
     
     
     public Usage findDayUsage(DataUsage usage) {
-         return dayUsage.get(usage.getEndTime().getDay());
+         return dayUsage.get(usage.getEndTime().getDate());
     }
 
     public Usage findHourUsage(DataUsage usage) {
@@ -43,12 +45,11 @@ public class Customer {
         return monthUsage;
     }
 
-    public void setMonthUsage(long monthUsage) {
-        this.monthUsage = monthUsage;
-    }
+   
 
     public void addToMonthlyUsage(long usageBytes) {
         this.monthUsage+=usageBytes;
+         persistPending=true;
     }
 
     public Map<Integer, Usage> getHourUsage() {
@@ -59,5 +60,18 @@ public class Customer {
         return dayUsage;
     }
     
+    public void statePersisited(){
+        for(Usage u:dayUsage.values()){
+            u.setUsageChanged(true);
+        }
+        for(Usage u:dayUsage.values()){
+            u.setUsageChanged(false);
+        }
+        persistPending=false;
+    }
+
+    public boolean isPersistPending() {
+        return persistPending;
+    }
     
 }

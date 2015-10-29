@@ -1,16 +1,45 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ page session="false" %>
-<html>
-<head>
-<title>Upload File Request Page</title>
-</head>
-<body>
- 
-    <form method="POST" action="uploadFile" enctype="multipart/form-data">
-        File to upload: <input type="file" name="file"><br /> 
-        Name: <input type="text" name="name"><br /> <br /> 
-        <input type="submit" value="Upload"> Press here to upload the file!
-    </form>
-     
-</body>
-</html>
+
+<style>
+    .bar {
+    height: 18px;
+    background: green;
+}
+</style>
+    
+<h3>
+    UploadFile
+</h3>
+<div>
+    
+    
+    <input id="fileupload" type="file" name="file" data-url="<c:url value="/uploadFile"/>" >
+
+
+    <div id="progress">
+    <div class="bar" style="width: 0%;"></div>
+    <div id="responseDiv"></div>
+</div>
+    
+    
+    
+    <script>
+$(function () {
+    $('#fileupload').fileupload({
+   
+        done: function (e, data) {
+               
+                $('#responseDiv').append('<p/>').text(data.result);
+            
+        },
+    progressall: function (e, data) {
+        var progress = parseInt(data.loaded / data.total * 100, 10);
+        $('#progress .bar').css(
+            'width',
+            progress + '%'
+        );
+    }
+});
+});
+</script>
+</div>

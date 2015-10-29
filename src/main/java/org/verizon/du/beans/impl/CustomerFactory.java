@@ -14,7 +14,6 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.verizon.du.core.Customer;
@@ -37,8 +36,8 @@ public class CustomerFactory {
             customer = new JdbcTemplate(dataSource).queryForObject("select * from CUST_DETAILS CD,USAGE_INFO UI where CD.CUSTID=UI.CUSTID AND CD.CUSTID=?", new RowMapper<Customer>() {
 
                 @Override
-                public Customer mapRow(ResultSet rs,int i) throws SQLException, DataAccessException {
-                    Customer c = new Customer(custId, loadColumns("HR_", 1, 24, rs), loadColumns("DAY_", 1, 31, rs), rs.getLong("MONTH_AGGR"));
+                public Customer mapRow(ResultSet rs, int i) throws SQLException, DataAccessException {
+                    Customer c = new Customer(custId, loadColumns("HR_", 0, 23, rs), loadColumns("DAY_", 0, 30, rs), rs.getLong("MONTH_AGGR"));
 
                     return c;
                 }
@@ -46,25 +45,28 @@ public class CustomerFactory {
                 public Map<Integer, Usage> loadColumns(String base, int start, int end, ResultSet rs) throws SQLException {
                     Map<Integer, Usage> usage = new HashMap<Integer, Usage>();
                     for (; start < end; start++) {
-                        usage.put(start - 1, new Usage(rs.getLong(base + start)));
+                        usage.put(start, new Usage(rs.getLong(base + start)));
                     }
                     return usage;
                 }
 
-            },custId);
+            }, custId);
             customerMap.put(custId, customer);
         }
         return customer;
     }
 
     public void updateCustomer(Customer customer) {
-        new JdbcTemplate(dataSource).update("update USAGE_INFO set " + getUpdateString(customer) + " where CUSTID=?", customer.getCustomerId());
+        if (customer.isPersistPending()) {
+            new JdbcTemplate(dataSource).update("update USAGE_INFO set " + getUpdateString(customer) + " where CUSTID=?", customer.getCustomerId());
+        }
+
     }
 
     private final StringBuilder sb = new StringBuilder(500);
 
     private String getUpdateString(Customer customer) {
-        
+
         sb.setLength(0);
         sb.append("MONTH_AGGR=").append(customer.getMonthUsage());
 
@@ -84,11 +86,11 @@ public class CustomerFactory {
 
         return sb.toString();
     }
-    
-    
-    public void store(){
-        for(Customer c:customerMap.values()){
+
+    public long store() {
+        for (Customer c : customerMap.values()) {
             updateCustomer(c);
         }
+        return customerMap.size();
     }
 }

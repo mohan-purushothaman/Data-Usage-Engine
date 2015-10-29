@@ -13,6 +13,9 @@
         <link rel="stylesheet"  href="<c:url value="/resources/css/"/><tiles:insertAttribute name="pageCSS" />" type="text/css" />
         <script src="<c:url value="/resources/js/jquery/jquery.js"/>"></script>
         <script src="<c:url value="/resources/js/jquery/jquery-ui.js"/>"></script>
+        <script src="<c:url value="/resources/js/jquery/jquery.ui.widget.js"/>"></script>
+        <script src="<c:url value="/resources/js/jquery/jquery.iframe-transport.js"/>"></script>
+        <script src="<c:url value="/resources/js/jquery/jquery.fileupload.js"/>"></script>
         <script src="<c:url value="/resources/js/base.js"/>"></script>
         <script src="<c:url value="/resources/js/"/><tiles:insertAttribute name="pageJS" />"></script>
         <title><tiles:insertAttribute name="pageTitle" /></title>

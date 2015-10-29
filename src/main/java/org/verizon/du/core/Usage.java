@@ -26,7 +26,12 @@ public class Usage {
     public boolean isUsageChanged() {
         return usageChanged;
     }
+
+    public void setUsageChanged(boolean usageChanged) {
+        this.usageChanged = usageChanged;
+    }
    
+    
     
     public void addUsage(long usageBytes){
         assert usageBytes!=0;
