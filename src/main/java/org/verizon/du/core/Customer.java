@@ -46,6 +46,18 @@ public class Customer {
     public void setMonthUsage(long monthUsage) {
         this.monthUsage = monthUsage;
     }
+
+    public void addToMonthlyUsage(long usageBytes) {
+        this.monthUsage+=usageBytes;
+    }
+
+    public Map<Integer, Usage> getHourUsage() {
+        return hourUsage;
+    }
+
+    public Map<Integer, Usage> getDayUsage() {
+        return dayUsage;
+    }
     
     
 }
