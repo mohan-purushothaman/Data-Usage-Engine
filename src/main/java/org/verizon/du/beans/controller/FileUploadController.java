@@ -51,7 +51,7 @@ public class FileUploadController {
                 BufferedReader ipReader = new BufferedReader(new InputStreamReader(ipStream),BaseConfig.BUFFER_SIZE);
                 while (ipReader.ready()){
                     String line=ipReader.readLine();
-                 DataUsage du= createDataUsage(line);
+                 engine.process(createDataUsage(line));
                  }
                 logger.info("Time taken----"+(System.currentTimeMillis()-startTime)+"ms");
  
