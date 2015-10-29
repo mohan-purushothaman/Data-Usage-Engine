@@ -28,7 +28,7 @@ public class SimpleAggregator implements Aggregator{
         long usageBytes=usage.getUsage();
        customer.findHourUsage(usage).addUsage(usageBytes);
        customer.findDayUsage(usage).addUsage(usageBytes);
-       
+       customer.addToMonthlyUsage(usageBytes);
         return customer;
     }
     

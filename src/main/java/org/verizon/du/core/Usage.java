@@ -14,9 +14,9 @@ public class Usage {
     private long usage;
  private boolean usageChanged;
 
-    public Usage(long usage, boolean usageChanged) {
+    public Usage(long usage) {
         this.usage = usage;
-        this.usageChanged = usageChanged;
+        this.usageChanged = false;
     }
 
     public long getUsage() {
@@ -29,6 +29,8 @@ public class Usage {
    
     
     public void addUsage(long usageBytes){
+        assert usageBytes!=0;
+        
         this.usage+=usageBytes;
         this.usageChanged=true;
     }
