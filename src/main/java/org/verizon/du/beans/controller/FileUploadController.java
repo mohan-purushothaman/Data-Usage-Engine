@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.verizon.du.beans.impl.CustomerFactory;
 import org.verizon.du.core.BaseConfig;
 import org.verizon.du.core.DataUsage;
 import org.verizon.du.beans.impl.Engine;
@@ -35,6 +36,9 @@ public class FileUploadController {
     Engine engine;
     private static final Logger logger = LoggerFactory
             .getLogger(FileUploadController.class);
+    
+    @Autowired
+    private CustomerFactory custFactory;
  
     /**
      * Upload single file using Spring Controller
@@ -53,8 +57,9 @@ public class FileUploadController {
                     String line=ipReader.readLine();
                  engine.process(createDataUsage(line));
                  }
+                custFactory.store();
                 logger.info("Time taken----"+(System.currentTimeMillis()-startTime)+"ms");
- 
+                
             } catch (Exception e) {
                 logger.error("Exception", e);
                 throw e;

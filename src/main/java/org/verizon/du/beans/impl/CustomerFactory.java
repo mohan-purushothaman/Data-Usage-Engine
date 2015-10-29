@@ -83,4 +83,11 @@ public class CustomerFactory {
 
         return sb.toString();
     }
+    
+    
+    public void store(){
+        for(Customer c:customerMap.values()){
+            updateCustomer(c);
+        }
+    }
 }
