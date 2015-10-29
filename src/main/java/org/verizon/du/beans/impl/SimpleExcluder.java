@@ -8,14 +8,9 @@ package org.verizon.du.beans.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -28,18 +23,18 @@ import org.verizon.du.core.Filter;
  * @author Administrator
  */
 @Component
-@Configuration
 public class SimpleExcluder implements ExcludeFilter{
 
-    @Autowired
-    DataSource dataSource;
+    private DataSource dataSource;
     
    // @Autowired
     //@Qualifier(value ="filterList")
     List<Filter> excludeFilterSet;
-
-    public SimpleExcluder() {
+    
+    @Autowired
+    public SimpleExcluder( DataSource dataSource) {
         if(null==excludeFilterSet){
+            this.dataSource=dataSource;
             excludeFilterSet=loadExcludeFilters();
         }
     }
