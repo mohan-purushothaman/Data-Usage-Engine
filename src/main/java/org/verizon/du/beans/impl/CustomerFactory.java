@@ -30,14 +30,14 @@ public class CustomerFactory {
     DataSource dataSource;
     private Map<String, Customer> customerMap = new HashMap<String, Customer>();
 
-    public Customer findCustomer(String custId) {
+    public Customer findCustomer(final String custId) {
         Customer customer = customerMap.get(custId);
         if (customer == null) {
-            customer = new JdbcTemplate(dataSource).query("select * from CUST where custId=?", new ResultSetExtractor<Customer>() {
+            customer = new JdbcTemplate(dataSource).query("select * from CUST_DETAILS CD,USAGE_INFO UI where CD.CUSTID=UI.CUSTID AND CD.CUSTID=?", new ResultSetExtractor<Customer>() {
 
                 @Override
                 public Customer extractData(ResultSet rs) throws SQLException, DataAccessException {
-                    Customer c = new Customer(rs.getString("CUSTID"), loadColumns("HR_", 1, 24, rs), loadColumns("DAY_", 1, 31, rs), rs.getLong("MONTH_AGGR"));
+                    Customer c = new Customer(custId, loadColumns("HR_", 1, 24, rs), loadColumns("DAY_", 1, 31, rs), rs.getLong("MONTH_AGGR"));
 
                     return c;
                 }
