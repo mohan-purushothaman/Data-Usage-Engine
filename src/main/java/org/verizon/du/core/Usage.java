@@ -28,6 +28,9 @@ public class Usage {
     }
    
     
-    
+    public void addUsage(long usageBytes){
+        this.usage+=usageBytes;
+        this.usageChanged=true;
+    }
     
 }
