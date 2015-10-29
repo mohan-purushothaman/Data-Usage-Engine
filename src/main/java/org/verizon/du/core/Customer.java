@@ -13,10 +13,39 @@ import java.util.Map;
  * @author Administrator
  */
 public class Customer {
-    private String customerId;
-    private Map<Integer,Usage> hourUsage;
-    private Map<Integer,Usage> dayUsage;
+    private final String customerId;
+    private final Map<Integer,Usage> hourUsage;
+    private final Map<Integer,Usage> dayUsage;
     private long monthUsage;
+
+    public Customer(String customerId, Map<Integer, Usage> hourUsage, Map<Integer, Usage> dayUsage, long monthUsage) {
+        this.customerId = customerId;
+        this.hourUsage = hourUsage;
+        this.dayUsage = dayUsage;
+        this.monthUsage = monthUsage;
+    }
+
+    public String getCustomerId() {
+        return customerId;
+    }
+    
+    
+    
+    public Usage findDayUsage(DataUsage usage) {
+         return dayUsage.get(usage.getEndTime().getDay());
+    }
+
+    public Usage findHourUsage(DataUsage usage) {
+         return hourUsage.get(usage.getEndTime().getHours());
+    }
+
+    public long getMonthUsage() {
+        return monthUsage;
+    }
+
+    public void setMonthUsage(long monthUsage) {
+        this.monthUsage = monthUsage;
+    }
     
     
 }

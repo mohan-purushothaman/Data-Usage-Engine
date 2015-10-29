@@ -37,19 +37,4 @@ public class Engine {
         
     }
 
-    /**
-     * basic factory method for creating data usage object
-     * @param usageString  
-     * @return 
-     */
-    private static DataUsage createDataUsage(String usageString) throws Exception {
-        String [] split=usageString.split(BaseConfig.SPLIT_STRING);
-        return new DataUsage(split[0], split[1], split[2], Long.parseLong(split[3]), parseDate(split[4]), parseDate(split[5]));
-    }
-    
-    
-    
-    private static Date parseDate(String dateString) throws Exception{
-        return new SimpleDateFormat(BaseConfig.DATE_FORMAT).parse(dateString);
-    }
 }

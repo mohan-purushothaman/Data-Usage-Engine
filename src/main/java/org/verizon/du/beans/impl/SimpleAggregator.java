@@ -5,10 +5,12 @@
  */
 package org.verizon.du.beans.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.verizon.du.core.Aggregator;
 import org.verizon.du.core.Customer;
 import org.verizon.du.core.DataUsage;
+import org.verizon.du.core.Usage;
 
 /**
  *
@@ -17,10 +19,17 @@ import org.verizon.du.core.DataUsage;
 @Component
 public class SimpleAggregator implements Aggregator{
 
+    @Autowired
+    CustomerFactory factory;
+    
     @Override
     public Customer aggregate(DataUsage usage) {
-        //Customer customer=
-        return null;
+        Customer customer=factory.findCustomer(usage.getCustomerId());
+        long usageBytes=usage.getUsage();
+       customer.findHourUsage(usage).addUsage(usageBytes);
+       customer.findDayUsage(usage).addUsage(usageBytes);
+       
+        return customer;
     }
     
 }
