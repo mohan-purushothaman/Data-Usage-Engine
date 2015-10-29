@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.verizon.du.core.Customer;
 import org.verizon.du.core.Usage;
@@ -33,10 +34,10 @@ public class CustomerFactory {
     public Customer findCustomer(final String custId) {
         Customer customer = customerMap.get(custId);
         if (customer == null) {
-            customer = new JdbcTemplate(dataSource).query("select * from CUST_DETAILS CD,USAGE_INFO UI where CD.CUSTID=UI.CUSTID AND CD.CUSTID=?", new ResultSetExtractor<Customer>() {
+            customer = new JdbcTemplate(dataSource).queryForObject("select * from CUST_DETAILS CD,USAGE_INFO UI where CD.CUSTID=UI.CUSTID AND CD.CUSTID=?", new RowMapper<Customer>() {
 
                 @Override
-                public Customer extractData(ResultSet rs) throws SQLException, DataAccessException {
+                public Customer mapRow(ResultSet rs,int i) throws SQLException, DataAccessException {
                     Customer c = new Customer(custId, loadColumns("HR_", 1, 24, rs), loadColumns("DAY_", 1, 31, rs), rs.getLong("MONTH_AGGR"));
 
                     return c;
@@ -50,14 +51,14 @@ public class CustomerFactory {
                     return usage;
                 }
 
-            }, custId);
+            },custId);
             customerMap.put(custId, customer);
         }
         return customer;
     }
 
     public void updateCustomer(Customer customer) {
-        new JdbcTemplate(dataSource).update("update USAGE_INFO set " + getUpdateString(customer) + " where cust_id=?'", customer.getCustomerId());
+        new JdbcTemplate(dataSource).update("update USAGE_INFO set " + getUpdateString(customer) + " where CUSTID=?", customer.getCustomerId());
     }
 
     private final StringBuilder sb = new StringBuilder(500);
@@ -65,12 +66,12 @@ public class CustomerFactory {
     private String getUpdateString(Customer customer) {
         
         sb.setLength(0);
-        sb.append(",MONTH_AGGR=").append(customer.getMonthUsage());
+        sb.append("MONTH_AGGR=").append(customer.getMonthUsage());
 
         for (Entry<Integer, Usage> usage : customer.getHourUsage().entrySet()) {
             Usage u = usage.getValue();
             if (u.isUsageChanged()) {
-                sb.append(",HOUR_").append(usage.getKey()).append('=').append(u.getUsage());
+                sb.append(",HR_").append(usage.getKey()).append('=').append(u.getUsage());
             }
         }
 
