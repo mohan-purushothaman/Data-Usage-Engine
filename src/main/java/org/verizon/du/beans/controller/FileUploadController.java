@@ -24,6 +24,7 @@ import org.verizon.du.beans.impl.CustomerFactory;
 import org.verizon.du.core.BaseConfig;
 import org.verizon.du.core.DataUsage;
 import org.verizon.du.beans.impl.Engine;
+import org.verizon.du.beans.impl.Processor;
 
 /**
  *
@@ -32,8 +33,10 @@ import org.verizon.du.beans.impl.Engine;
 @Controller
 public class FileUploadController {
 
+    
     @Autowired
-    private Engine engine;
+    private Processor processor;
+    
     private static final Logger logger = LoggerFactory
             .getLogger(FileUploadController.class);
 
@@ -58,9 +61,11 @@ public class FileUploadController {
                 long lines = 0;
                 while (ipReader.ready()) {
                     String line = ipReader.readLine();
-                    engine.process(createDataUsage(line));
+                    processor.process(line);
                     lines++;
                 }
+                processor.shutDownExecutor();
+                
                 long updaterCustomerCount = custFactory.store();
                 return ((System.currentTimeMillis() - startTime) + " ms taken to update " + updaterCustomerCount + " customers [" + lines + " records]");
 
@@ -73,13 +78,5 @@ public class FileUploadController {
         }
     }
 
-    private DataUsage createDataUsage(String usageString) throws Exception {
-        String[] split = usageString.split(BaseConfig.SPLIT_STRING);
-        return new DataUsage(split[0], split[1], split[2], Long.parseLong(split[3]), parseDate(split[4]), parseDate(split[5]));
-    }
-    private SimpleDateFormat dff = new SimpleDateFormat(BaseConfig.DATE_FORMAT);
-
-    private Date parseDate(String dateString) throws Exception {
-        return dff.parse(dateString);
-    }
+    
 }
