@@ -19,7 +19,7 @@ import org.verizon.du.core.Customer;
 @Component
 public class SimpleAlertSystem implements AlertSystem {
 
-    private static final int MAX_SIZE = 150;
+    private static final long MAX_SIZE = 150;
     private static final long alertStartSize = MAX_SIZE * 1024 * 1024 * 1024 * 7 / 10; //70% of MAX_SIZE
 
     private static final long ONE_PERCENT_OF_MAX_SIZE = MAX_SIZE * 1024 * 1024 * 1024 / 100;
@@ -36,10 +36,14 @@ public class SimpleAlertSystem implements AlertSystem {
         int after = (int) (customer.getMonthUsage() / ONE_PERCENT_OF_MAX_SIZE);
         int before = (int) (customer.getMonthUsageBeforeUpdate() / ONE_PERCENT_OF_MAX_SIZE);
 
+        if (before > 100) {
+            return null;
+        }
+
         if ((before % 5 > after % 5 || ((after - before) > 5))) {
             //need to do alery stff here
-            log.info("need to alert this customer for " + customer.getCustomerId() + " for "+after + " % usage of " + MAX_SIZE + " GB");
-            return new Alert( after, customer);
+            log.info("need to alert this customer for " + customer.getCustomerId() + " for " + after + " % usage of " + MAX_SIZE + " GB");
+            return new Alert(after, customer);
         }
         return null;
     }
