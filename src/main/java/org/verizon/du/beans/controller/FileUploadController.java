@@ -64,10 +64,11 @@ public class FileUploadController {
                     processor.process(line);
                     lines++;
                 }
-                processor.shutDownExecutor();
+                
+               
                 
                 long updaterCustomerCount = custFactory.store();
-                return ((System.currentTimeMillis() - startTime) + " ms taken to update " + updaterCustomerCount + " customers [" + lines + " records]");
+                return ((System.currentTimeMillis() - startTime) + " ms taken to upload " + lines + " records]");
 
             } catch (Exception e) {
                 logger.error("Exception", e);

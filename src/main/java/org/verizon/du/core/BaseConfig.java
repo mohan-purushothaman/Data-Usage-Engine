@@ -19,4 +19,5 @@ public class BaseConfig {
     
     public static final int HOUR_SEGMENTS=24;
     public static final int DAY_SEGMENTS=31;
+    public static int THREAD_POOL_SIZE=1;
 }
