@@ -58,7 +58,7 @@ public class SimpleAlertSystemTest extends TestCase {
     
     public void testProcessAlerts85() {
         System.out.println("processAlerts");
-        Customer customer = new Customer("testCustomer", null, null, 128L*1024*1024*1024,"a@b",1234567890);
+        Customer customer = new Customer("testCustomer", null, null, 126L*1024*1024*1024,"a@b",1234567890);
         customer.addToMonthlyUsage((long) 2*1024*1024*1024);
         SimpleAlertSystem instance = new SimpleAlertSystem();
         Alert a  = instance.processAlerts(customer);
