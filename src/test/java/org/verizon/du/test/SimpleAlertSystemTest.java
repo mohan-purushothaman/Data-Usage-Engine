@@ -53,7 +53,6 @@ public class SimpleAlertSystemTest extends TestCase {
         SimpleAlertSystem instance = new SimpleAlertSystem();
         Alert a  = instance.processAlerts(customer);
         Assert.assertNull(a);
-        // TODO review the generated test code and remove the default call to fail.
     }
     
     public void testProcessAlerts85() {
