@@ -15,7 +15,7 @@ import org.verizon.du.core.Customer;
  */
 @Component
 public class SimpleAlertSystem implements AlertSystem{
-
+    
     @Override
     public void processAlerts(Customer customer) {
         return;
