@@ -1,5 +1,1 @@
-<%-- 
-    Document   : baseTemplate
-    Author     : Mohan Purushothaman
---%>
-footer
+&copy; SSP Buddies

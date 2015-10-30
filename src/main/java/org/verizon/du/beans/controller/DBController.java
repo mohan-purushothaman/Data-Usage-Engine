@@ -21,20 +21,28 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 public class DBController {
-    
-    
+
+    private final Logger logger = LoggerFactory.getLogger(DBController.class);
+
     @Autowired
-    DataSource dataSource;
-       
-    
-   @RequestMapping({"/executeQuery"})
-   @ResponseBody
-   public String executeQuery(@RequestParam("querytext") String query){
-    
-       new JdbcTemplate(dataSource).execute(query);
-       return "success";
-   }
-    
-    
-    
+    private DataSource dataSource;
+
+    @RequestMapping({"/executeQuery"})
+    @ResponseBody
+    public String executeQuery(@RequestParam("querytext") String query) {
+        StringBuilder sb = new StringBuilder();
+        for (String s : query.split(";")) {
+            sb.append("Processing ...").append(s).append('\n');
+            try {
+                new JdbcTemplate(dataSource).execute(s);
+                sb.append("success");
+            } catch (Exception e) {
+                e.printStackTrace();
+                sb.append("failed with ").append(e);
+            }
+        }
+
+        return sb.toString();
+    }
+
 }

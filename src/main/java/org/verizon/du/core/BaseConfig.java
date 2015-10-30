@@ -15,4 +15,8 @@ public class BaseConfig {
     public static final String DATE_FORMAT="yyyy-MM-dd HH:mm:ss";
     public static final int BUFFER_SIZE=1024*1024 ;
     public static final int STREAM_BUFFER_SIZE=2*1024*1024 ;
+    
+    
+    public static final int HOUR_SEGMENTS=24;
+    public static final int DAY_SEGMENTS=31;
 }

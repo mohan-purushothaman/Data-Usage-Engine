@@ -1,0 +1,38 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Oct 29, 2015, 8:43:25 PM
+    Author     : Administrator
+*/
+
+#leftDiv{
+    float:left;
+    width:45%;
+}
+
+#rightDiv{
+ float: right;
+ width:45%;
+}
+
+#leftDiv textArea{
+    width: 90%;
+}
+
+
+#mainDiv{
+    clear:both;
+    float: none;
+    display: block;
+}
+#mainDiv #baseDiv{
+    width:100%;
+}
+
+ #rightDiv span{
+    display: block;
+    padding:5px 20px;
+}

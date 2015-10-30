@@ -15,4 +15,11 @@
         <put-attribute name="pageCSS" value="home.css"/>
         <put-attribute name="pageJS" value="home.js"/>
     </definition>
+    
+    <definition extends="baseTemplate" name="usage">
+        <put-attribute name="pageTitle" value="Customer Usage Details"/>
+        <put-attribute name="body" value="/WEB-INF/jsp/usageInfo.jsp"/>
+        <put-attribute name="pageCSS" value="usage.css"/>
+        <put-attribute name="pageJS" value="usage.js"/>
+    </definition>
 </tiles-definitions>

@@ -14,13 +14,13 @@ import java.util.Map;
  */
 public class Customer {
     private final String customerId;
-    private final Map<Integer,Usage> hourUsage;
-    private final Map<Integer,Usage> dayUsage;
+    private final Usage[] hourUsage;  //0-23
+    private final Usage[] dayUsage; //0-30
     private long monthUsage;
 
     private boolean persistPending;
     
-    public Customer(String customerId, Map<Integer, Usage> hourUsage, Map<Integer, Usage> dayUsage, long monthUsage) {
+    public Customer(String customerId, Usage[] hourUsage, Usage[] dayUsage, long monthUsage) {
         this.customerId = customerId;
         this.hourUsage = hourUsage;
         this.dayUsage = dayUsage;
@@ -34,11 +34,11 @@ public class Customer {
     
     
     public Usage findDayUsage(DataUsage usage) {
-         return dayUsage.get(usage.getEndTime().getDate());
+         return dayUsage[usage.getEndTime().getDate()];
     }
 
     public Usage findHourUsage(DataUsage usage) {
-         return hourUsage.get(usage.getEndTime().getHours());
+         return hourUsage[usage.getEndTime().getHours()];
     }
 
     public long getMonthUsage() {
@@ -52,19 +52,19 @@ public class Customer {
          persistPending=true;
     }
 
-    public Map<Integer, Usage> getHourUsage() {
+    public Usage[] getHourUsage() {
         return hourUsage;
     }
 
-    public Map<Integer, Usage> getDayUsage() {
+    public Usage[] getDayUsage() {
         return dayUsage;
     }
     
     public void statePersisited(){
-        for(Usage u:dayUsage.values()){
+        for(Usage u:dayUsage){
             u.setUsageChanged(true);
         }
-        for(Usage u:dayUsage.values()){
+        for(Usage u:dayUsage){
             u.setUsageChanged(false);
         }
         persistPending=false;

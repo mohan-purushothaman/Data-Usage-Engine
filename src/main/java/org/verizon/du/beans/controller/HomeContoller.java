@@ -28,6 +28,12 @@ public class HomeContoller {
    public String query(){
        return "query";
    }
-    
-    
+   
+   
+
+   
+    @RequestMapping("/usage")
+    public String usage(){
+        return "usage";
+    }
 }

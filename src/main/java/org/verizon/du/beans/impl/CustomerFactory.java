@@ -7,7 +7,9 @@ package org.verizon.du.beans.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.sql.DataSource;
@@ -16,6 +18,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+import org.verizon.du.core.BaseConfig;
 import org.verizon.du.core.Customer;
 import org.verizon.du.core.Usage;
 
@@ -26,6 +29,8 @@ import org.verizon.du.core.Usage;
 @Component
 public class CustomerFactory {
 
+    
+    
     @Autowired
     DataSource dataSource;
     private Map<String, Customer> customerMap = new HashMap<String, Customer>();
@@ -37,15 +42,15 @@ public class CustomerFactory {
 
                 @Override
                 public Customer mapRow(ResultSet rs, int i) throws SQLException, DataAccessException {
-                    Customer c = new Customer(custId, loadColumns("HR_", 0, 23, rs), loadColumns("DAY_", 0, 30, rs), rs.getLong("MONTH_AGGR"));
+                    Customer c = new Customer(custId, loadColumns("HR_", BaseConfig.HOUR_SEGMENTS, rs), loadColumns("DAY_", BaseConfig.DAY_SEGMENTS, rs), rs.getLong("MONTH_AGGR"));
 
                     return c;
                 }
 
-                public Map<Integer, Usage> loadColumns(String base, int start, int end, ResultSet rs) throws SQLException {
-                    Map<Integer, Usage> usage = new HashMap<Integer, Usage>();
-                    for (; start < end; start++) {
-                        usage.put(start, new Usage(rs.getLong(base + start)));
+                public Usage[] loadColumns(String base, int arraySize, ResultSet rs) throws SQLException {
+                    Usage[] usage=new Usage[arraySize];
+                    for (int i = 0; i < arraySize; i++) {
+                        usage[i]=new Usage(rs.getLong(base+i));
                     }
                     return usage;
                 }
@@ -70,19 +75,25 @@ public class CustomerFactory {
         sb.setLength(0);
         sb.append("MONTH_AGGR=").append(customer.getMonthUsage());
 
-        for (Entry<Integer, Usage> usage : customer.getHourUsage().entrySet()) {
-            Usage u = usage.getValue();
+        
+        Usage[] hourUsage=customer.getHourUsage();
+        for (int i = 0; i < BaseConfig.HOUR_SEGMENTS; i++) {
+            Usage u=hourUsage[i];
             if (u.isUsageChanged()) {
-                sb.append(",HR_").append(usage.getKey()).append('=').append(u.getUsage());
+                sb.append(",HR_").append(i).append('=').append(u.getUsage());
+            }
+        }
+        
+        
+        Usage[] dayUsage=customer.getDayUsage();
+        for (int i = 0; i < BaseConfig.DAY_SEGMENTS; i++) {
+            Usage u=dayUsage[i];
+            if (u.isUsageChanged()) {
+                sb.append(",DAY_").append(i).append('=').append(u.getUsage());
             }
         }
 
-        for (Entry<Integer, Usage> usage : customer.getDayUsage().entrySet()) {
-            Usage u = usage.getValue();
-            if (u.isUsageChanged()) {
-                sb.append(",DAY_").append(usage.getKey()).append('=').append(u.getUsage());
-            }
-        }
+        
 
         return sb.toString();
     }
@@ -92,5 +103,9 @@ public class CustomerFactory {
             updateCustomer(c);
         }
         return customerMap.size();
+    }
+    
+    public Collection<Customer> getLoadedCusomerList(){
+        return customerMap.values();
     }
 }

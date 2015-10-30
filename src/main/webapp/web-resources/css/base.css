@@ -1,0 +1,40 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Oct 29, 2015, 7:56:15 PM
+    Author     : Administrator
+*/
+
+
+
+.header{
+    text-align: center;
+    font-size: 1.2em;
+}
+
+.body{
+    clear:both;
+}
+
+.page{
+    min-height: 500px;
+    display: block;
+}
+
+.footer{
+    clear:both;
+    text-align: center;
+}
+
+.menu a{
+    color: blue;
+    text-decoration: none;
+    padding:5px;
+}
+.menu a:hover{
+    text-decoration: brown underline;
+    background: lightblue;
+}
