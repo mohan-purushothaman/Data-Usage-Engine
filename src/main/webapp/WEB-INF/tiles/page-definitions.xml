@@ -21,5 +21,12 @@
         <put-attribute name="body" value="/WEB-INF/jsp/usageInfo.jsp"/>
         <put-attribute name="pageCSS" value="usage.css"/>
         <put-attribute name="pageJS" value="usage.js"/>
+    </definition> 
+    <definition extends="baseTemplate" name="addCustomer">
+        <put-attribute name="pageTitle" value="Add Customer"/>
+        <put-attribute name="body" value="/WEB-INF/jsp/addCustomer.jsp"/>
+        <put-attribute name="pageCSS" value="addCustomer.css"/>
+        <put-attribute name="pageJS" value="addCustomer.js"/>
+    
     </definition>
 </tiles-definitions>

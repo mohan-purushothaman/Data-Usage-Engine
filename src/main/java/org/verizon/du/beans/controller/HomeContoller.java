@@ -36,4 +36,9 @@ public class HomeContoller {
     public String usage(){
         return "usage";
     }
+    
+      @RequestMapping("/addCustomer")
+    public String addCustomer(){
+        return "addCustomer";
+    }
 }

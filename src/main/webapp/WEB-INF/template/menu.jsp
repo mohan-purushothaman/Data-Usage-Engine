@@ -4,3 +4,5 @@
 <a href="<c:url value="/home" />" >Upload</a>
 
 <a href="<c:url value="/usage" />" >Usage Snapshot</a>
+
+<a href="<c:url value="/addCustomer" />" >Add Customer</a>
