@@ -108,3 +108,9 @@ AFTER INSERT ON cust_details
 FOR EACH ROW 
   INSERT INTO usage_info (CUSTID)
   VALUES (NEW.CUSTID);
+
+INSERT INTO CUST_DETAILS VALUES ('123456','01','akhila.kotcherlakota@verizon.com','9790887567');
+INSERT INTO CUST_DETAILS VALUES ('1234564','01','ram.hariharan@verizon.com','9790887567');
+INSERT INTO CUST_DETAILS VALUES ('234561','01','mohan.purushothaman@verizon.com','9790887567');
+
+select * from USAGE_INFO;
