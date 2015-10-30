@@ -42,7 +42,7 @@ public class CustomerFactory {
 
                 @Override
                 public Customer mapRow(ResultSet rs, int i) throws SQLException, DataAccessException {
-                    Customer c = new Customer(custId, loadColumns("HR_", BaseConfig.HOUR_SEGMENTS, rs), loadColumns("DAY_", BaseConfig.DAY_SEGMENTS, rs), rs.getLong("MONTH_AGGR"));
+                    Customer c = new Customer(custId, loadColumns("HR_", BaseConfig.HOUR_SEGMENTS, rs), loadColumns("DAY_", BaseConfig.DAY_SEGMENTS, rs), rs.getLong("MONTH_AGGR"),rs.getString("EMAIL"),rs.getInt("TN"));
 
                     return c;
                 }

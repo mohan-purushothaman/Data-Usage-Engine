@@ -9,6 +9,10 @@ package org.verizon.du.core;
  *
  * @author Administrator
  */
+
+
 public interface AlertSystem {
-    public void processAlerts(Customer customer);
+    public Alert processAlerts(Customer customer);
+    
+    
 }

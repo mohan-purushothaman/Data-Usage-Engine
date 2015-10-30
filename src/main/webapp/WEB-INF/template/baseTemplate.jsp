@@ -11,12 +11,18 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet"  href="<c:url value="/resources/css/base.css"/>" type="text/css" />
         <link rel="stylesheet"  href="<c:url value="/resources/css/"/><tiles:insertAttribute name="pageCSS" />" type="text/css" />
-        <script src="<c:url value="/resources/css/jquery-ui.js"/>"></script>
+        <link  rel="stylesheet" href="<c:url value="/resources/css/jquery-ui.css"/>"/>
+        <link  rel="stylesheet" href="<c:url value="/resources/css/jquery.dataTables.css"/>"/>
         <script src="<c:url value="/resources/js/jquery/jquery.js"/>"></script>
         <script src="<c:url value="/resources/js/jquery/jquery-ui.js"/>"></script>
         <script src="<c:url value="/resources/js/jquery/jquery.ui.widget.js"/>"></script>
         <script src="<c:url value="/resources/js/jquery/jquery.iframe-transport.js"/>"></script>
         <script src="<c:url value="/resources/js/jquery/jquery.fileupload.js"/>"></script>
+        <script src="<c:url value="/resources/js/jquery/jquery.dataTables.js"/>"></script>
+
+        <script src="<c:url value="/resources/js/d3/d3.v3.js"/>"></script>
+        <script src="<c:url value="/resources/js/d3/dimple.v2.1.6.js"/>"></script>
+
         <script src="<c:url value="/resources/js/base.js"/>"></script>
         <script src="<c:url value="/resources/js/"/><tiles:insertAttribute name="pageJS" />"></script>
         <title><tiles:insertAttribute name="pageTitle" /></title>
