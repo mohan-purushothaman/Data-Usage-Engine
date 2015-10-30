@@ -18,13 +18,19 @@ public class Customer {
     private final Usage[] dayUsage; //0-30
     private long monthUsage;
 
+    private long monthUsageBeforeUpdate;
     private boolean persistPending;
     
-    public Customer(String customerId, Usage[] hourUsage, Usage[] dayUsage, long monthUsage) {
+    private String email;
+    private int TN; 
+    
+    public Customer(String customerId, Usage[] hourUsage, Usage[] dayUsage, long monthUsage,String email,int TN) {
         this.customerId = customerId;
         this.hourUsage = hourUsage;
         this.dayUsage = dayUsage;
         this.monthUsage = monthUsage;
+        this.email=email;
+        this.TN=TN;
     }
 
     public String getCustomerId() {
@@ -34,7 +40,7 @@ public class Customer {
     
     
     public Usage findDayUsage(DataUsage usage) {
-         return dayUsage[usage.getEndTime().getDate()];
+         return dayUsage[usage.getEndTime().getDate()-1];
     }
 
     public Usage findHourUsage(DataUsage usage) {
@@ -48,8 +54,10 @@ public class Customer {
    
 
     public void addToMonthlyUsage(long usageBytes) {
+        monthUsageBeforeUpdate=this.monthUsage;
         this.monthUsage+=usageBytes;
          persistPending=true;
+         
     }
 
     public Usage[] getHourUsage() {
@@ -73,5 +81,20 @@ public class Customer {
     public boolean isPersistPending() {
         return persistPending;
     }
+
+    public long getMonthUsageBeforeUpdate() {
+        return monthUsageBeforeUpdate;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public int getTN() {
+        return TN;
+    }
+    
+    
+    
     
 }

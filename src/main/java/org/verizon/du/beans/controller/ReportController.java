@@ -5,8 +5,12 @@
  */
 package org.verizon.du.beans.controller;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -41,12 +45,17 @@ public class ReportController {
    
     @RequestMapping("/usageData")
     @ResponseBody
-    public Set<Customer> snapshot(@RequestParam String customerIds){
-        Set<Customer> customer=new HashSet<Customer>();
+    public Map snapshot(@RequestParam String customerIds){
+        
+            Map<String,List<Customer>> map=new HashMap<String,List<Customer>>();
+        
+        List<Customer> customer=new ArrayList<Customer>();
         for(String custId:customerIds.split(BaseConfig.SPLIT_STRING)){
             customer.add(custFactory.findCustomer(custId));
         }
-        return customer;
+        map.put("data", customer);
+        return map;
+        //return customer;
     }
     
     
