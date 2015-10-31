@@ -11,6 +11,7 @@ import org.verizon.du.core.Aggregator;
 import org.verizon.du.core.Customer;
 import org.verizon.du.core.DataUsage;
 import org.verizon.du.core.Usage;
+import org.verizon.du.core.UsageType;
 
 /**
  *
@@ -26,9 +27,11 @@ public class SimpleAggregator implements Aggregator{
     public Customer aggregate(DataUsage usage) {
         Customer customer=factory.findCustomer(usage.getCustomerId());
         long usageBytes=usage.getUsage();
-       customer.findHourUsage(usage).addUsage(usageBytes);
-       customer.findDayUsage(usage).addUsage(usageBytes);
-       customer.addToMonthlyUsage(usageBytes);
+        
+        for(UsageType t:UsageType.values()){
+            customer.findUsage(t, usage).addUsage(usageBytes);
+        }
+       
         return customer;
     }
     

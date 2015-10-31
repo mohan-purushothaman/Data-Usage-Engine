@@ -9,10 +9,10 @@ package org.verizon.du.core;
  *
  * @author Administrator
  */
-
-
 public interface AlertSystem {
+
+    public static final long MAX_SIZE = 150;
+
     public Alert processAlerts(Customer customer);
-    
-    
+
 }

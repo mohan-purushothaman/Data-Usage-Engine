@@ -10,34 +10,37 @@ package org.verizon.du.core;
  * @author Administrator
  */
 public class Usage {
+
+    private long nonpersistedUsage;
+    private long persistedUsage;
+
+    public Usage(long persistedUsage) {
+        this.persistedUsage = persistedUsage;
+        this.nonpersistedUsage = persistedUsage;
+    }
+
+    public long getPersistedUsage() {
+        return persistedUsage;
+    }
+
+    public void setPersistedUsage(long persistedUsage) {
+        this.persistedUsage = persistedUsage;
+    }
+
+    public long getNonpersistedUsage() {
+        return nonpersistedUsage;
+    }
+
+    
+public boolean persistNeeded(){
+    return persistedUsage!=nonpersistedUsage;
+}
    
-    private long usage;
- private boolean usageChanged;
 
-    public Usage(long usage) {
-        this.usage = usage;
-        this.usageChanged = false;
-    }
+    public void addUsage(long usageBytes) {
+        assert usageBytes != 0;
 
-    public long getUsage() {
-        return usage;
+        this.nonpersistedUsage += usageBytes;
     }
 
-    public boolean isUsageChanged() {
-        return usageChanged;
-    }
-
-    public void setUsageChanged(boolean usageChanged) {
-        this.usageChanged = usageChanged;
-    }
-   
-    
-    
-    public void addUsage(long usageBytes){
-        assert usageBytes!=0;
-        
-        this.usage+=usageBytes;
-        this.usageChanged=true;
-    }
-    
 }

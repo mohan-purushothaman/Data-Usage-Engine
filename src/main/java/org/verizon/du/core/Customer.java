@@ -5,85 +5,57 @@
  */
 package org.verizon.du.core;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * // all usage updates should happen through this object
  *
  * @author Administrator
  */
 public class Customer {
-    private final String customerId;
-    private final Usage[] hourUsage;  //0-23
-    private final Usage[] dayUsage; //0-30
-    private long monthUsage;
 
-    private long monthUsageBeforeUpdate;
-    private boolean persistPending;
-    
-    private String email;
-    private int TN; 
-    
-    public Customer(String customerId, Usage[] hourUsage, Usage[] dayUsage, long monthUsage,String email,int TN) {
+    private final String customerId;
+    private final Map<UsageType, Usage[]> usage;  //0-23 && 0-30
+
+    private final String email;
+    private final int TN;
+
+    public Customer(String customerId, Map<UsageType, Usage[]> usage, String email, int TN) {
         this.customerId = customerId;
-        this.hourUsage = hourUsage;
-        this.dayUsage = dayUsage;
-        this.monthUsage = monthUsage;
-        this.email=email;
-        this.TN=TN;
+        this.email = email;
+        this.TN = TN;
+        this.usage = usage;
     }
 
     public String getCustomerId() {
         return customerId;
     }
-    
-    
-    
-    public Usage findDayUsage(DataUsage usage) {
-         return dayUsage[usage.getEndTime().getDate()-1];
-    }
 
-    public Usage findHourUsage(DataUsage usage) {
-         return hourUsage[usage.getEndTime().getHours()];
-    }
-
-    public long getMonthUsage() {
-        return monthUsage;
-    }
-
-   
-
-    public void addToMonthlyUsage(long usageBytes) {
-        monthUsageBeforeUpdate=this.monthUsage;
-        this.monthUsage+=usageBytes;
-         persistPending=true;
-         
+    public Usage findUsage(UsageType type, DataUsage usage) {
+        return this.usage.get(type)[type.findIndex(usage)];
     }
 
     public Usage[] getHourUsage() {
-        return hourUsage;
+        return usage.get(UsageType.HOUR);
     }
 
     public Usage[] getDayUsage() {
-        return dayUsage;
-    }
-    
-    public void statePersisited(){
-        for(Usage u:dayUsage){
-            u.setUsageChanged(true);
-        }
-        for(Usage u:dayUsage){
-            u.setUsageChanged(false);
-        }
-        persistPending=false;
+        return usage.get(UsageType.HOUR);
     }
 
-    public boolean isPersistPending() {
-        return persistPending;
+    public Usage getMonthUsage() {
+        return usage.get(UsageType.MONTH)[0];
     }
 
-    public long getMonthUsageBeforeUpdate() {
-        return monthUsageBeforeUpdate;
+    public void setPersisted() {
+
+        for (Usage[] ua : usage.values()) {
+            for (Usage u : ua) {
+                u.setPersistedUsage(u.getNonpersistedUsage());
+            }
+        }
     }
 
     public String getEmail() {
@@ -93,8 +65,5 @@ public class Customer {
     public int getTN() {
         return TN;
     }
-    
-    
-    
-    
+
 }

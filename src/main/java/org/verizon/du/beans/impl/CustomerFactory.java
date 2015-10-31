@@ -5,10 +5,12 @@
  */
 package org.verizon.du.beans.impl;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Component;
 import org.verizon.du.core.BaseConfig;
 import org.verizon.du.core.Customer;
 import org.verizon.du.core.Usage;
+import org.verizon.du.core.UsageType;
 
 /**
  *
@@ -30,11 +33,9 @@ import org.verizon.du.core.Usage;
 @Component
 public class CustomerFactory {
 
-    
-    
     @Autowired
     DataSource dataSource;
-    private Map<String, Customer> customerMap = new HashMap<String, Customer>();
+    private final Map<String, Customer> customerMap = new HashMap<String, Customer>();
 
     public Customer findCustomer(final String custId) {
         Customer customer = customerMap.get(custId);
@@ -43,75 +44,73 @@ public class CustomerFactory {
 
                 @Override
                 public Customer mapRow(ResultSet rs, int i) throws SQLException, DataAccessException {
-                    Customer c = new Customer(custId, loadColumns("HR_", BaseConfig.HOUR_SEGMENTS, rs), loadColumns("DAY_", BaseConfig.DAY_SEGMENTS, rs), rs.getLong("MONTH_AGGR"),rs.getString("EMAIL"),rs.getInt("TN"));
+                    Map<UsageType, Usage[]> usage = new EnumMap<UsageType, Usage[]>(UsageType.class);
+
+                    for (UsageType t : UsageType.values()) {
+                        usage.put(t, loadColumns(t, rs));
+                    }
+
+                    Customer c = new Customer(custId, usage, rs.getString("EMAIL"), rs.getInt("TN"));
 
                     return c;
                 }
 
-                public Usage[] loadColumns(String base, int arraySize, ResultSet rs) throws SQLException {
-                    Usage[] usage=new Usage[arraySize];
-                    for (int i = 0; i < arraySize; i++) {
-                        usage[i]=new Usage(rs.getLong(base+i));
+                public Usage[] loadColumns(UsageType type, ResultSet rs) throws SQLException {
+                    Usage[] usage = new Usage[type.getSegmentSize()];
+                    for (int i = 0; i < usage.length; i++) {
+                        usage[i] = new Usage(rs.getLong(type.getDbColumnPrefix() + i));
                     }
                     return usage;
                 }
 
             }, custId);
-            customerMap.put(custId, customer);
+            synchronized (customerMap) {
+                customerMap.put(custId, customer);
+            }
         }
         return customer;
     }
 
-    
-    
-    
-//this should be called when all threads are competed //assumption
-    
-    private final StringBuilder sb = new StringBuilder(500);
+    private String addUpdateSection(Customer customer, StringBuilder sb) {
 
-    private String getUpdateString(Customer customer) {
-
-        sb.setLength(0);
-        sb.append("MONTH_AGGR=").append(customer.getMonthUsage());
-
-        
-        Usage[] hourUsage=customer.getHourUsage();
-        for (int i = 0; i < BaseConfig.HOUR_SEGMENTS; i++) {
-            Usage u=hourUsage[i];
-            if (u.isUsageChanged()) {
-                sb.append(",HR_").append(i).append('=').append(u.getUsage());
-            }
-        }
-        
-        
-        Usage[] dayUsage=customer.getDayUsage();
-        for (int i = 0; i < BaseConfig.DAY_SEGMENTS; i++) {
-            Usage u=dayUsage[i];
-            if (u.isUsageChanged()) {
-                sb.append(",DAY_").append(i).append('=').append(u.getUsage());
-            }
+        for (Usage u : customer.getHourUsage()) {
+            sb.append(UsageType.HOUR.getDbColumnPrefix()).append('=').append(u.getNonpersistedUsage()).append(',');
         }
 
-        
+        for (Usage u : customer.getHourUsage()) {
+            sb.append(UsageType.HOUR.getDbColumnPrefix()).append('=').append(u.getNonpersistedUsage()).append(',');
+        }
 
+        sb.append(UsageType.MONTH.getDbColumnPrefix()).append('=').append(customer.getMonthUsage().getNonpersistedUsage());
         return sb.toString();
     }
 
-    public long store() {
-        List<String> updateList=new ArrayList<String>();
+    public long store() throws SQLException {
+        StringBuilder updateBuilder = new StringBuilder(customerMap.size() * 10); // just wild guess and starting size for updateBuilder
         for (Customer c : customerMap.values()) {
-            addUpdateStatments(c,updateList);
+            addUpdateStatments(c, updateBuilder);
+        }
+
+        try (Connection c = dataSource.getConnection()) {
+            //using native allowMultiQueries connection for optimization, need to write fallback
+            c.setClientInfo("allowMultiQueries", "true");
+            c.createStatement().executeUpdate(updateBuilder.toString());
+            if (!c.getAutoCommit()) {
+                c.commit();
+            }
         }
         return customerMap.size();
     }
-    
-    public Collection<Customer> getLoadedCusomerList(){
+
+    public Collection<Customer> getLoadedCusomerList() {
         return customerMap.values();
     }
 
-    private void addUpdateStatments(Customer c, List<String> updateList) {
-         if (c.isPersistPending()) {
-            updateList.add("update USAGE_INFO set " + getUpdateString(c) + " where CUSTID='"+ c.getCustomerId()+'\'');
+    private void addUpdateStatments(Customer c, StringBuilder updateBuilder) {
+        if (c.getMonthUsage().persistNeeded()) {
+            updateBuilder.append("update USAGE_INFO set ");
+            addUpdateSection(c, updateBuilder);
+            updateBuilder.append(" where CUSTID='").append(c.getCustomerId()).append("';");
             //bill cycle logic, and month usage archive
         }
     }

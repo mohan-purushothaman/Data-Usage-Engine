@@ -20,12 +20,18 @@ public class Alert {
         this.alertPercentage = alertPercentage;
         this.customer=customer;
     }
+
+    public Customer getCustomer() {
+        return customer;
+    }
     
    
 
     public int getAlertPercentage() {
         return alertPercentage;
     }
+    
+    
     
     
 }
