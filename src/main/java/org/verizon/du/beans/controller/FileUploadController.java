@@ -8,8 +8,6 @@ package org.verizon.du.beans.controller;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +20,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.verizon.du.beans.impl.CustomerFactory;
 import org.verizon.du.core.BaseConfig;
-import org.verizon.du.core.DataUsage;
-import org.verizon.du.beans.impl.Engine;
 import org.verizon.du.beans.impl.Processor;
 
 /**

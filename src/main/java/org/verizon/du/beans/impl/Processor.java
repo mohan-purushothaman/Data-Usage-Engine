@@ -33,7 +33,7 @@ public class Processor {
     private ExecutorService executor = Executors.newFixedThreadPool(BaseConfig.THREAD_POOL_SIZE);
 
     public void process(final String line) throws Exception {
-        executor.execute(new ProcessRunnable(line, engine));
+        executor.submit(new ProcessRunnable(line, engine));
     }
     
     

@@ -9,46 +9,49 @@ import java.util.regex.Pattern;
 
 /**
  *
+ * "*" in DB means exclude all for that field
+ *
+ * 
+ * as of now starttime can't more than end, good to have
  * @author Administrator
  */
 public class Filter {
 
-   
-    private final String customerId;
     private final String webSite;
     private final int startHr;
     private final int startMin;
     private final int endHr;
     private final int endMin;
-    private Pattern custIdPattern;
-    private Pattern webSitePattern;
-    
-     public Filter(String customerId, String webSite, int startHr, int startMin,int endHr,int endMin) {
-        this.customerId = customerId;
-        this.webSite = webSite;
+
+    private final boolean ignoreWebsiteCheck;
+    //private Pattern webSitePattern;
+
+    public Filter(String webSite, int startHr, int startMin, int endHr, int endMin) {
+        ignoreWebsiteCheck = BaseConfig.STAR.equals(webSite);
+        this.webSite = ignoreWebsiteCheck ? null : webSite;
         this.startHr = startHr;
         this.startMin = startMin;
         this.endHr = endHr;
         this.endMin = endMin;
-        this.custIdPattern=Pattern.compile(customerId);
-        this.webSitePattern=Pattern.compile(webSite);
+        //this.webSitePattern = Pattern.compile(webSite);
     }
-    
+
     public boolean canExclude(DataUsage usage) {
-          if(custIdPattern.matcher(usage.getCustomerId()).matches())
-           return true; 
-          else if(webSitePattern.matcher(usage.getWebsite()).matches())
-           return true; 
-          else if(usage.getStartTime().getHours()>=(this.startHr)&&
-                  usage.getStartTime().getMinutes()>=(this.startMin)&&
-                  usage.getEndTime().getHours()<=(this.endHr)&&
-                  usage.getEndTime().getMinutes()<=(this.endMin))
-           return true;
-          else return false;
-     }
-    
-     
-     
-     
+        //planned functionality , good to have
+//        if (webSitePattern.matcher(usage.getWebsite()).matches()) {
+//            return true;
+//        } else 
+        
+        if (!ignoreWebsiteCheck && webSite.equalsIgnoreCase(usage.getWebsite())) {
+            //websites are case incensitive // for performance boost sender can agree to send fixed case
+
+            return true;
+        }
+        return usage.getStartTime().getHours() >= (this.startHr)
+                && usage.getStartTime().getMinutes() >= (this.startMin)
+                && usage.getEndTime().getHours() <= (this.endHr)
+                && usage.getEndTime().getMinutes() <= (this.endMin);
+
+    }
 
 }

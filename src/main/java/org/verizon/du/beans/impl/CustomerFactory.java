@@ -7,6 +7,7 @@ package org.verizon.du.beans.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -61,13 +62,11 @@ public class CustomerFactory {
         return customer;
     }
 
-    public void updateCustomer(Customer customer) {
-        if (customer.isPersistPending()) {
-            new JdbcTemplate(dataSource).update("update USAGE_INFO set " + getUpdateString(customer) + " where CUSTID=?", customer.getCustomerId());
-        }
-
-    }
-
+    
+    
+    
+//this should be called when all threads are competed //assumption
+    
     private final StringBuilder sb = new StringBuilder(500);
 
     private String getUpdateString(Customer customer) {
@@ -99,13 +98,21 @@ public class CustomerFactory {
     }
 
     public long store() {
+        List<String> updateList=new ArrayList<String>();
         for (Customer c : customerMap.values()) {
-            updateCustomer(c);
+            addUpdateStatments(c,updateList);
         }
         return customerMap.size();
     }
     
     public Collection<Customer> getLoadedCusomerList(){
         return customerMap.values();
+    }
+
+    private void addUpdateStatments(Customer c, List<String> updateList) {
+         if (c.isPersistPending()) {
+            updateList.add("update USAGE_INFO set " + getUpdateString(c) + " where CUSTID='"+ c.getCustomerId()+'\'');
+            //bill cycle logic, and month usage archive
+        }
     }
 }
