@@ -5,6 +5,7 @@
  */
 package org.verizon.du.core;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Calendar;
 import java.util.Date;
@@ -24,17 +25,16 @@ public class Customer {
     private final String email;
     private final long TN;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH")
     private Date lastUsageTime;
-
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH")
     private Date persistedUsageTime;
 
     private final Calendar nextBilledDate;
 
     private boolean needToBill;
-    
-    
-    private final Object  customerLock=new Object();
-    
+
+    private final Object customerLock = new Object();
 
     public Customer(String customerId, Map<UsageType, Usage[]> usage, int billCycleDay, String email, long TN, Date lastUsageTime) {
         this.customerId = customerId;
@@ -45,7 +45,7 @@ public class Customer {
         assert billCycleDay > 0 && billCycleDay <= 28 : "Billcycle should be between 0-28 (both inclusive), 0 not suppoted yet";
 
         this.billCycleDay = billCycleDay;
-        this.lastUsageTime = (lastUsageTime==null)?new Date():lastUsageTime;
+        this.lastUsageTime = (lastUsageTime == null) ? new Date() : lastUsageTime;
         this.persistedUsageTime = this.lastUsageTime;
         this.nextBilledDate = calculateNextBillCycleDate(persistedUsageTime, billCycleDay);
     }
@@ -63,7 +63,7 @@ public class Customer {
     }
 
     public Usage[] getDayUsage() {
-        return usage.get(UsageType.HOUR);
+        return usage.get(UsageType.DAY);
     }
 
     public Usage getMonthUsage() {
@@ -77,7 +77,7 @@ public class Customer {
                 u.setPersistedUsage(u.getNonpersistedUsage());
             }
         }
-        needToBill=false;
+        needToBill = false;
     }
 
     public String getEmail() {
@@ -170,9 +170,9 @@ public class Customer {
     public boolean isNeedToBill() {
         return needToBill;
     }
-    
+
     @JsonIgnore
-    public final Object getCustomerLock(){
+    public final Object getCustomerLock() {
         return customerLock;
     }
 

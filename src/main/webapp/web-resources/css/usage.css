@@ -8,31 +8,6 @@ and open the template in the editor.
     Author     : Administrator
 */
 
-#leftDiv{
-    float:left;
-    width:45%;
-}
-
-#rightDiv{
- float: right;
- width:45%;
-}
-
-#leftDiv textArea{
-    width: 90%;
-}
-
-
-#mainDiv{
-    clear:both;
-    float: none;
-    display: block;
-}
-#mainDiv #baseDiv{
-    width:100%;
-}
-
- #rightDiv span{
-    display: block;
-    padding:5px 20px;
+#inputDiv input{
+    width: 200px;
 }
