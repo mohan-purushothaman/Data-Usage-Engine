@@ -38,7 +38,9 @@ public enum UsageType {
         return segmentSize;
     }
     
-    
+     public String getDbColumn(int index) {
+        return getDbColumnPrefix()+index;
+    }
     
     
     public int findIndex(DataUsage usage){

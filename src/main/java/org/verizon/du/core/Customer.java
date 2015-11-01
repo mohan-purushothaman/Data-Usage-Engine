@@ -22,7 +22,7 @@ public class Customer {
 
     private final int billCycleDay; //1 means first day upto 28 just to be on safe side
     private final String email;
-    private final int TN;
+    private final long TN;
 
     private Date lastUsageTime;
 
@@ -36,7 +36,7 @@ public class Customer {
     private final Object  customerLock=new Object();
     
 
-    public Customer(String customerId, Map<UsageType, Usage[]> usage, int billCycleDay, String email, int TN, Date lastUsageTime) {
+    public Customer(String customerId, Map<UsageType, Usage[]> usage, int billCycleDay, String email, long TN, Date lastUsageTime) {
         this.customerId = customerId;
         this.email = email;
         this.TN = TN;
@@ -77,13 +77,14 @@ public class Customer {
                 u.setPersistedUsage(u.getNonpersistedUsage());
             }
         }
+        needToBill=false;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public int getTN() {
+    public long getTN() {
         return TN;
     }
 

@@ -36,9 +36,6 @@ public class FileUploadController {
     private static final Logger logger = LoggerFactory
             .getLogger(FileUploadController.class);
 
-    @Autowired
-    private CustomerFactory custFactory;
-
     /**
      * Upload single file using Spring Controller
      *
@@ -50,6 +47,8 @@ public class FileUploadController {
     String uploadFileHandler(@RequestParam MultipartFile file) throws Exception {
         logger.info("uploadFileHandler");
         long startTime = System.currentTimeMillis();
+        
+        processor.initNewExecutor();
         if (!file.isEmpty()) {
             try {
                 BufferedInputStream ipStream = new BufferedInputStream(file.getInputStream(), BaseConfig.STREAM_BUFFER_SIZE);
@@ -62,8 +61,14 @@ public class FileUploadController {
                 }
                 
                
-                
-                long updaterCustomerCount = custFactory.store();
+                new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        processor.scheduleShutdownHook();
+                    }
+                }).start();
+
                 return ((System.currentTimeMillis() - startTime) + " ms taken to upload " + lines + " records]");
 
             } catch (Exception e) {

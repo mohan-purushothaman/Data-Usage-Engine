@@ -44,66 +44,76 @@ public class CustomerFactory {
 
     private static final Logger log = LoggerFactory.getLogger(CustomerFactory.class);
 
-    public Customer findCustomer(final String custId)throws Exception{
+    public Customer findCustomer(final String custId) throws Exception {
         Customer customer = customerMap.get(custId);
         if (customer == null) {
-            try{
-            customer = new JdbcTemplate(dataSource).queryForObject("select * from CUST_DETAILS CD,USAGE_INFO UI where CD.CUSTID=UI.CUSTID AND CD.CUSTID=?", new RowMapper<Customer>() {
+            try {
+                customer = new JdbcTemplate(dataSource).queryForObject("select * from CUST_DETAILS CD,USAGE_INFO UI where CD.CUSTID=UI.CUSTID AND CD.CUSTID=?", new RowMapper<Customer>() {
 
-                @Override
-                public Customer mapRow(ResultSet rs, int i) throws SQLException, DataAccessException {
-                    Map<UsageType, Usage[]> usage = new EnumMap<UsageType, Usage[]>(UsageType.class);
+                    @Override
+                    public Customer mapRow(ResultSet rs, int i) throws SQLException, DataAccessException {
+                        Map<UsageType, Usage[]> usage = new EnumMap<UsageType, Usage[]>(UsageType.class);
 
-                    for (UsageType t : UsageType.values()) {
-                        usage.put(t, loadColumns(t, rs));
+                        for (UsageType t : UsageType.values()) {
+                            usage.put(t, loadColumns(t, rs));
+                        }
+
+                        Customer c = new Customer(custId, usage, Integer.parseInt(rs.getString("BILL_CYCLE")),
+                                rs.getString("EMAIL"), rs.getLong("TN"), rs.getTimestamp("LAST_USAGE_UPDATE_TIME"));
+
+                        return c;
                     }
 
-                    Customer c = new Customer(custId, usage, Integer.parseInt(rs.getString("BILL_CYCLE")),
-                            rs.getString("EMAIL"), rs.getInt("TN"), rs.getTimestamp("LAST_USAGE_UPDATE_TIME"));
-
-                    return c;
-                }
-
-                public Usage[] loadColumns(UsageType type, ResultSet rs) throws SQLException {
-                    Usage[] usage = new Usage[type.getSegmentSize()];
-                    for (int i = 0; i < usage.length; i++) {
-                        usage[i] = new Usage(rs.getLong(type.getDbColumnPrefix() + i));
+                    public Usage[] loadColumns(UsageType type, ResultSet rs) throws SQLException {
+                        Usage[] usage = new Usage[type.getSegmentSize()];
+                        for (int i = 0; i < usage.length; i++) {
+                            usage[i] = new Usage(rs.getLong(type.getDbColumnPrefix() + i));
+                        }
+                        return usage;
                     }
-                    return usage;
-                }
 
-            }, custId);
-            customerMap.put(custId, customer);
-            }catch(Exception e){
+                }, custId);
+                customerMap.put(custId, customer);
+            } catch (Exception e) {
                 log.error("error occured", e);
-                throw new Exception("Customer with customerId "+custId+" not found");
+                throw new Exception("Customer with customerId " + custId + " not found");
             }
         }
 
         return customer;
     }
 
-    private String addUpdateSection(Customer customer, StringBuilder sb) {
-
-        for (Usage u : customer.getHourUsage()) {
-            sb.append(UsageType.HOUR.getDbColumnPrefix()).append('=').append(u.getNonpersistedUsage()).append(',');
+    private void addUpdateSection(Customer customer, StringBuilder sb) {
+        Usage[] usage = customer.getHourUsage();
+        for (int i = 0; i < usage.length; i++) {
+            Usage u = usage[i];
+            if (u.persistNeeded()) {
+                sb.append(UsageType.HOUR.getDbColumn(i)).append('=').append(u.getNonpersistedUsage()).append(',');
+            }
         }
 
-        for (Usage u : customer.getHourUsage()) {
-            sb.append(UsageType.HOUR.getDbColumnPrefix()).append('=').append(u.getNonpersistedUsage()).append(',');
+        usage = customer.getDayUsage();
+        for (int i = 0; i < usage.length; i++) {
+            Usage u = usage[i];
+            if (u.persistNeeded()) {
+                sb.append(UsageType.DAY.getDbColumn(i)).append('=').append(u.getNonpersistedUsage()).append(',');
+            }
         }
 
-        sb.append(UsageType.MONTH.getDbColumnPrefix()).append('=').append(customer.getMonthUsage().getNonpersistedUsage());
-        return sb.toString();
+        sb.append(UsageType.MONTH.getDbColumn(0)).append('=').append(customer.getMonthUsage().getNonpersistedUsage());
     }
 
-    public long store() throws Exception {
+    public String handlePersistFailure(Exception e) {
+        customerMap.clear();
+        return "Internal error occured, No changes made to DB, resubmit after correction";
+    }
+
+    public long persist() throws Exception {
         StringBuilder updateBuilder = new StringBuilder(customerMap.size() * 10); // just wild guess and starting size for updateBuilder
         DateFormat df = new SimpleDateFormat("yyyy/MM/dd");
 
         for (Customer c : customerMap.values()) {
             addUpdateStatments(c, updateBuilder, df);
-            c.setPersisted();
         }
         log.info(updateBuilder.toString());
         try (Connection c = dataSource.getConnection()) {
@@ -113,12 +123,12 @@ public class CustomerFactory {
             if (!c.getAutoCommit()) {
                 c.commit();
             }
-            // changes are flushed to DB, clear cache now
+
+            for (Customer cust : customerMap.values()) {
+                cust.setPersisted();
+            }
 
             return updateCount;
-        } catch (Exception e) {
-            customerMap.clear();
-            throw e;
         }
 
     }
