@@ -81,15 +81,24 @@
                 var dayUsage = data.data[0].dayUsage;
 
                 var h = [];
-
-                for (var hour in hourUsage) {
-                    h[hour] = {"Hour": hour, "Usage": hourUsage[hour].persistedUsage};
+                
+                var l=data.data[0].lastUsageTime;
+                var lastAccessedDate= new Date( parseInt(l.substring(0,4)),parseInt(l.substring(5,7)),parseInt(l.substring(8,10)) ,parseInt(l.substring(12,14))   );
+                var lHour=lastAccessedDate.getHours();
+                var index=24;
+                while(index>0){
+                    var i=(index+lHour)%24;
+                    h[i] = {"Hourly": new Date(lastAccessedDate.getYear(),lastAccessedDate.getMonth(),lastAccessedDate.getDate(),lastAccessedDate.getHours()), "Usage": hourUsage[i].persistedUsage};
+                    index--;
+                    lastAccessedDate.setHours(lastAccessedDate.getHours()-1);
                 }
+                
 
-                var svg = dimple.newSvg("#hourUsage", 700, 400);
+
+                var svg = dimple.newSvg("#hourUsage", 950, 400);
                 var myChart = new dimple.chart(svg, h);
-                myChart.setBounds(60, 30, 600, 305)
-                var x = myChart.addCategoryAxis("x", "Hour");
+                myChart.setBounds(60, 30, 800, 350)
+                var x = myChart.addTimeAxis("x", "Hourly",null,' %I-%p ');
                 //x.addOrderRule("Date");
                 var yAxis = myChart.addMeasureAxis("y", "Usage");
 
@@ -112,12 +121,12 @@
                 var d = [];
 
                 for (var day in dayUsage) {
-                    d[day] = {"Day": day, "Usage": dayUsage[day].persistedUsage};
+                    d[day] = {"Day": 1+parseInt(day), "Usage": dayUsage[day].persistedUsage};
                 }
 
-                var svg1 = dimple.newSvg("#dayUsage", 700, 400);
+                var svg1 = dimple.newSvg("#dayUsage", 900, 400);
                 var myChart1 = new dimple.chart(svg1, d);
-                myChart1.setBounds(60, 30, 510, 305);
+                myChart1.setBounds(60, 30, 800, 305);
                 var x1 = myChart1.addCategoryAxis("x", "Day");
                 //x.addOrderRule("Date");
                 var yAxis1 = myChart1.addMeasureAxis("y", "Usage");

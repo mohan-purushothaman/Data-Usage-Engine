@@ -56,7 +56,9 @@ public class ProgressTracker {
                 long completed = e.getCompletedTaskCount();
                 return new Progress(total, completed);
             }
-            return null;
+            Progress p=new Progress(0, 0);
+            p.setMsg(getCompletionMessage());
+            return p;
         }
         throw new Exception("No Job in progress");
     }
@@ -65,6 +67,8 @@ public class ProgressTracker {
 
         private final long total;
         private final long completed;
+        
+        private String msg;
 
         public Progress(long total, long completed) {
             this.total = total;
@@ -79,5 +83,16 @@ public class ProgressTracker {
             return completed;
         }
 
+        public String getMsg() {
+            return msg;
+        }
+
+        public void setMsg(String msg) {
+            this.msg = msg;
+        }
+
+        
+        
+        
     }
 }

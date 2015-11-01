@@ -8,6 +8,7 @@ package org.verizon.du.beans.impl;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -109,40 +110,42 @@ public class CustomerFactory {
     }
 
     public long persist() throws Exception {
-        StringBuilder updateBuilder = new StringBuilder(customerMap.size() * 10); // just wild guess and starting size for updateBuilder
         DateFormat df = new SimpleDateFormat("yyyy/MM/dd");
 
-        for (Customer c : customerMap.values()) {
-            addUpdateStatments(c, updateBuilder, df);
-        }
-        log.info(updateBuilder.toString());
         try (Connection c = dataSource.getConnection()) {
-            //using native allowMultiQueries connection for optimization, need to write fallback
-            c.setClientInfo("allowMultiQueries", "true");
-            long updateCount = c.createStatement().executeUpdate(updateBuilder.toString());
-            if (!c.getAutoCommit()) {
-                c.commit();
+            c.setAutoCommit(false);
+            Statement s = c.createStatement();
+
+            for (Customer cust : customerMap.values()) {
+                addUpdateStatments(cust, s, df);
             }
+            int[] updatedCount = s.executeBatch();
+            c.commit();
 
             for (Customer cust : customerMap.values()) {
                 cust.setPersisted();
             }
-
+            int updateCount = 0;
+            for (int v : updatedCount) {
+                updateCount += v;
+            }
             return updateCount;
         }
 
     }
 
-    private void addUpdateStatments(Customer c, StringBuilder updateBuilder, DateFormat df) {
+    private void addUpdateStatments(Customer c, Statement s, DateFormat df) throws SQLException {
+
         if (c.isNeedToBill()) {
-            updateBuilder.append("insert into MONTH_USAGE_HISTORY(CUSTID,MONTHLY_USAGE,BILLED_DATE) values('").append(c.getCustomerId()).append("','")
-                    .append(c.getMonthUsage().getPersistedUsage()).append(",")
-                    .append(df.format(c.getNextBilledDate().getTime())).append("');");
+            s.addBatch("insert into MONTH_USAGE_HISTORY(CUSTID,MONTHLY_USAGE,BILLED_DATE) values('" + c.getCustomerId() + "',"
+                    + +c.getMonthUsage().getPersistedUsage() + ",'" + df.format(c.getNextBilledDate().getTime()) + "')");
         }
         if (c.persistNeeded()) {
-            updateBuilder.append("update USAGE_INFO set ");
-            addUpdateSection(c, updateBuilder);
-            updateBuilder.append(" where CUSTID='").append(c.getCustomerId()).append("';");
+            StringBuilder sb = new StringBuilder(300);
+            sb.append("update USAGE_INFO set ");
+            addUpdateSection(c, sb);
+            sb.append(" where CUSTID='").append(c.getCustomerId()).append("'");
+            s.addBatch(sb.toString());
         }
 
     }

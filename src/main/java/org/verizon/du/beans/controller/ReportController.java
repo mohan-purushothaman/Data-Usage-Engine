@@ -12,6 +12,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.verizon.du.beans.impl.CustomerFactory;
+import org.verizon.du.beans.impl.ProgressTracker;
 import org.verizon.du.core.BaseConfig;
 import org.verizon.du.core.Customer;
 
@@ -58,5 +61,13 @@ public class ReportController {
         //return customer;
     }
     
+    @Autowired
+    private ProgressTracker p;
     
+    @RequestMapping("currentProgress")
+    @ResponseBody
+    public ProgressTracker.Progress currentProgress() throws Exception{
+            return p.getRecentJobProgress();
+            
+    }
 }
