@@ -45,7 +45,7 @@ public class ReportController {
    
     @RequestMapping("/usageData")
     @ResponseBody
-    public Map snapshot(@RequestParam String customerIds){
+    public Map snapshot(@RequestParam String customerIds) throws Exception{
         
             Map<String,List<Customer>> map=new HashMap<String,List<Customer>>();
         

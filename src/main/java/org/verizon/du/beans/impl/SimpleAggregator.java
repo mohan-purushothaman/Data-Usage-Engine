@@ -18,21 +18,24 @@ import org.verizon.du.core.UsageType;
  * @author Administrator
  */
 @Component
-public class SimpleAggregator implements Aggregator{
+public class SimpleAggregator implements Aggregator {
 
     @Autowired
     CustomerFactory factory;
-    
+
     @Override
-    public Customer aggregate(DataUsage usage) {
-        Customer customer=factory.findCustomer(usage.getCustomerId());
-        long usageBytes=usage.getUsage();
-        
-        for(UsageType t:UsageType.values()){
-            customer.findUsage(t, usage).addUsage(usageBytes);
+    public Customer aggregate(DataUsage usage)throws Exception {
+        Customer customer = factory.findCustomer(usage.getCustomerId());
+
+        synchronized (customer.getCustomerLock()) {
+            customer.clearDirtyRead(usage);
+
+            for (UsageType t : UsageType.values()) {
+                customer.findUsage(t, usage).addUsage(usage.getUsage());
+            }
         }
-       
+
         return customer;
     }
-    
+
 }

@@ -10,5 +10,5 @@ package org.verizon.du.core;
  * @author Administrator
  */
 public interface Aggregator {
-    Customer aggregate(DataUsage usage);
+    Customer aggregate(DataUsage usage) throws Exception;
 }

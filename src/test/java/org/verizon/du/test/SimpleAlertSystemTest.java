@@ -40,7 +40,7 @@ public class SimpleAlertSystemTest extends TestCase {
      */
     public void testProcessAlerts75() {
         System.out.println("processAlerts");
-        Customer customer = new Customer("testCustomer", createUsageMap(112L * 1024 * 1024 * 1024), "a@b", 123);
+        Customer customer = new Customer("testCustomer", createUsageMap(112L * 1024 * 1024 * 1024),1, "a@b", 123,null);
         customer.findUsage(UsageType.MONTH,null).addUsage(1L * 1024 * 1024 * 1024);
         SimpleAlertSystem instance = new SimpleAlertSystem();
         Alert a = instance.processAlerts(customer);
@@ -66,16 +66,26 @@ public class SimpleAlertSystemTest extends TestCase {
 
     public void testProcessAlertsInsideLimit() {
         System.out.println("processAlerts");
-        Customer customer = new Customer("testCustomer", createUsageMap(1123400L), "a@b", 1234567890);
+        Customer customer = new Customer("testCustomer", createUsageMap(1123400L),1, "a@b", 1234567890,null);
         customer.findUsage(UsageType.MONTH,null).addUsage(2230L);
         SimpleAlertSystem instance = new SimpleAlertSystem();
         Alert a = instance.processAlerts(customer);
         Assert.assertNull(a);
     }
+    
+    
+    public void testBillCycleLogics(){
+        try{
+            new Customer("testCustomer", createUsageMap(1123400L),0, "a@b", 1234567890,null);
+            fail("0 suppoted now ? rewrite testcase ");
+        }catch(AssertionError e){
+            //expected so ignore
+        }
+    }
 
     public void testProcessAlerts85() {
         System.out.println("processAlerts");
-        Customer customer = new Customer("testCustomer", createUsageMap(126L * 1024 * 1024 * 1024), "a@b", 1234567890);
+        Customer customer = new Customer("testCustomer", createUsageMap(126L * 1024 * 1024 * 1024), 1,"a@b", 1234567890,null);
         customer.findUsage(UsageType.MONTH,null).addUsage(2L * 1024 * 1024 * 1024);
         SimpleAlertSystem instance = new SimpleAlertSystem();
         Alert a = instance.processAlerts(customer);

@@ -8,6 +8,8 @@ package org.verizon.du.beans.impl;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -15,7 +17,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.sql.DataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -35,11 +40,14 @@ public class CustomerFactory {
 
     @Autowired
     DataSource dataSource;
-    private final Map<String, Customer> customerMap = new HashMap<String, Customer>();
+    private final ConcurrentHashMap<String, Customer> customerMap = new ConcurrentHashMap<String, Customer>(1024);
 
-    public Customer findCustomer(final String custId) {
+    private static final Logger log = LoggerFactory.getLogger(CustomerFactory.class);
+
+    public Customer findCustomer(final String custId)throws Exception{
         Customer customer = customerMap.get(custId);
         if (customer == null) {
+            try{
             customer = new JdbcTemplate(dataSource).queryForObject("select * from CUST_DETAILS CD,USAGE_INFO UI where CD.CUSTID=UI.CUSTID AND CD.CUSTID=?", new RowMapper<Customer>() {
 
                 @Override
@@ -50,7 +58,8 @@ public class CustomerFactory {
                         usage.put(t, loadColumns(t, rs));
                     }
 
-                    Customer c = new Customer(custId, usage, rs.getString("EMAIL"), rs.getInt("TN"));
+                    Customer c = new Customer(custId, usage, Integer.parseInt(rs.getString("BILL_CYCLE")),
+                            rs.getString("EMAIL"), rs.getInt("TN"), rs.getTimestamp("LAST_USAGE_UPDATE_TIME"));
 
                     return c;
                 }
@@ -64,10 +73,13 @@ public class CustomerFactory {
                 }
 
             }, custId);
-            synchronized (customerMap) {
-                customerMap.put(custId, customer);
+            customerMap.put(custId, customer);
+            }catch(Exception e){
+                log.error("error occured", e);
+                throw new Exception("Customer with customerId "+custId+" not found");
             }
         }
+
         return customer;
     }
 
@@ -85,33 +97,47 @@ public class CustomerFactory {
         return sb.toString();
     }
 
-    public long store() throws SQLException {
+    public long store() throws Exception {
         StringBuilder updateBuilder = new StringBuilder(customerMap.size() * 10); // just wild guess and starting size for updateBuilder
-        for (Customer c : customerMap.values()) {
-            addUpdateStatments(c, updateBuilder);
-        }
+        DateFormat df = new SimpleDateFormat("yyyy/MM/dd");
 
+        for (Customer c : customerMap.values()) {
+            addUpdateStatments(c, updateBuilder, df);
+            c.setPersisted();
+        }
+        log.info(updateBuilder.toString());
         try (Connection c = dataSource.getConnection()) {
             //using native allowMultiQueries connection for optimization, need to write fallback
             c.setClientInfo("allowMultiQueries", "true");
-            c.createStatement().executeUpdate(updateBuilder.toString());
+            long updateCount = c.createStatement().executeUpdate(updateBuilder.toString());
             if (!c.getAutoCommit()) {
                 c.commit();
             }
+            // changes are flushed to DB, clear cache now
+
+            return updateCount;
+        } catch (Exception e) {
+            customerMap.clear();
+            throw e;
         }
-        return customerMap.size();
+
+    }
+
+    private void addUpdateStatments(Customer c, StringBuilder updateBuilder, DateFormat df) {
+        if (c.isNeedToBill()) {
+            updateBuilder.append("insert into MONTH_USAGE_HISTORY(CUSTID,MONTHLY_USAGE,BILLED_DATE) values('").append(c.getCustomerId()).append("','")
+                    .append(c.getMonthUsage().getPersistedUsage()).append(",")
+                    .append(df.format(c.getNextBilledDate().getTime())).append("');");
+        }
+        if (c.persistNeeded()) {
+            updateBuilder.append("update USAGE_INFO set ");
+            addUpdateSection(c, updateBuilder);
+            updateBuilder.append(" where CUSTID='").append(c.getCustomerId()).append("';");
+        }
+
     }
 
     public Collection<Customer> getLoadedCusomerList() {
         return customerMap.values();
-    }
-
-    private void addUpdateStatments(Customer c, StringBuilder updateBuilder) {
-        if (c.getMonthUsage().persistNeeded()) {
-            updateBuilder.append("update USAGE_INFO set ");
-            addUpdateSection(c, updateBuilder);
-            updateBuilder.append(" where CUSTID='").append(c.getCustomerId()).append("';");
-            //bill cycle logic, and month usage archive
-        }
     }
 }

@@ -31,16 +31,17 @@ public class Usage {
         return nonpersistedUsage;
     }
 
-    
-public boolean persistNeeded(){
-    return persistedUsage!=nonpersistedUsage;
-}
-   
+    public boolean persistNeeded() {
+        return persistedUsage != nonpersistedUsage;
+    }
 
     public void addUsage(long usageBytes) {
         assert usageBytes != 0;
-
         this.nonpersistedUsage += usageBytes;
     }
 
+    public void clearNonPersistUsage(){
+        this.nonpersistedUsage= 0;
+    }
+    
 }
