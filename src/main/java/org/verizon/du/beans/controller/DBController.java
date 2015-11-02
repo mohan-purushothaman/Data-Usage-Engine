@@ -5,6 +5,9 @@
  */
 package org.verizon.du.beans.controller;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,20 +32,18 @@ public class DBController {
 
     @RequestMapping({"/executeQuery"})
     @ResponseBody
-    public String executeQuery(@RequestParam("querytext") String query) {
-        StringBuilder sb = new StringBuilder();
+    public String executeQuery(@RequestParam("querytext") String query) throws SQLException {
+        
+       try(Connection c=dataSource.getConnection()){
+           c.setAutoCommit(false);
+           Statement st=c.createStatement();
         for (String s : query.split(";")) {
-            sb.append("Processing ...").append(s).append('\n');
-            try {
-                new JdbcTemplate(dataSource).execute(s);
-                sb.append("success");
-            } catch (Exception e) {
-                e.printStackTrace();
-                sb.append("failed with ").append(e);
-            }
+            st.addBatch(s);
         }
-
-        return sb.toString();
+        st.executeBatch();
+        c.commit();
+       }
+        return "Completed Successfully";
     }
 
 }
